@@ -333,3 +333,17 @@ func FindFirstFileWithSuffix(dir string, suffix string) (string, error) {
 	}
 	return "", fmt.Errorf("not found for .%v", suffix)
 }
+
+func ListFiles(dir string, ignorer DirFilter, fileFilter FileFilter) []string {
+	rv := ElicitFilesFrom(dir, ignorer, fileFilter)
+	dir, e := filepath.Abs(dir)
+	if e != nil {
+		panic(e)
+	}
+	dir = filepath.ToSlash(dir) // fix platform difference.
+	for i, v := range rv {
+		v = strings.TrimPrefix(v, dir)
+		rv[i] = strings.TrimPrefix(v, "/")
+	}
+	return rv
+}
